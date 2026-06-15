@@ -1,0 +1,79 @@
+databaseChangeLog:
+  - changeSet:
+      id: 05
+      author: lyra
+      changes:
+        - createTable:
+            tableName: event
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: VARCHAR(150)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: summary
+                  type: VARCHAR(255)
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: contact_tgi
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: contact_email
+                  type: VARCHAR(150)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: location
+                  type: VARCHAR(200)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: event_date
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: duration_minutes
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: service_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_event_service
+                    references: service(id)
+              - column:
+                  name: theme_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_event_theme
+                    references: theme(id)
+              - column:
+                  name: capacity
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false

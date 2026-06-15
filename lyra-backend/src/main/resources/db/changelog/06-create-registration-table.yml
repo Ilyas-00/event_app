@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - changeSet:
+      id: 06
+      author: lyra
+      changes:
+        - createTable:
+            tableName: registration
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: event_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_registration_event
+                    references: event(id)
+              - column:
+                  name: user_tgi
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_firstname
+                  type: VARCHAR(100)
+              - column:
+                  name: user_lastname
+                  type: VARCHAR(100)
+              - column:
+                  name: user_secteur
+                  type: VARCHAR(100)
+              - column:
+                  name: registered_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            tableName: registration
+            columnNames: event_id, user_tgi
+            constraintName: uq_registration_event_user

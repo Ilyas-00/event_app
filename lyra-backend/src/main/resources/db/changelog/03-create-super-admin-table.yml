@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: 03
+      author: lyra
+      changes:
+        - createTable:
+            tableName: super_admin
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_tgi
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: created_by
+                  type: VARCHAR(50)
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false

@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: 07
+      author: lyra
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: "0"
+            sql: SELECT COUNT(*) FROM super_admin WHERE user_tgi = 't0123450'
+      changes:
+        - insert:
+            tableName: super_admin
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: user_tgi
+                  value: t0123450
+              - column:
+                  name: created_at
+                  valueComputed: NOW()

@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: 04
+      author: lyra
+      changes:
+        - createTable:
+            tableName: user_service_admin
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_tgi
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: service_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_usa_service
+                    references: service(id)
+              - column:
+                  name: assigned_by
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: assigned_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false

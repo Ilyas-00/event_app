@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <include file="db/changelog/01-create-theme-table.yml"/>
+    <include file="db/changelog/02-create-service-table.yml"/>
+    <include file="db/changelog/03-create-super-admin-table.yml"/>
+    <include file="db/changelog/04-create-user-service-admin-table.yml"/>
+    <include file="db/changelog/05-create-event-table.yml"/>
+    <include file="db/changelog/06-create-registration-table.yml"/>
+    <include file="db/changelog/07-seed-super-admins.yml"/>
+</databaseChangeLog>
