@@ -1,10 +1,10 @@
 package com.lyra.lyra_backend.event;
 
 import com.lyra.lyra_backend.theme.ThemeRepository;
+import com.lyra.lyra_backend.registration.RegistrationRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import com.lyra.lyra_backend.registration.RegistrationRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,7 +26,6 @@ public class EventService {
     }
 
     public Event create(CreateEventRequest req, String creatorTgi, UUID serviceId) {
-        // le thème doit exister
         if (!themeRepository.existsById(req.themeId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Thème introuvable");
         }
@@ -47,7 +46,8 @@ public class EventService {
 
         return eventRepository.save(event);
     }
-     public List<Event> getAll() {
+
+    public List<Event> getAll() {
         return eventRepository.findAll();
     }
 
@@ -83,6 +83,11 @@ public class EventService {
 
     public int getRegistrationCount(UUID eventId) {
         return registrationRepository.countByEventId(eventId);
-    }   
+    }
 
+    public String getThemeName(UUID themeId) {
+        return themeRepository.findById(themeId)
+                .map(theme -> theme.getName())
+                .orElse("Thème inconnu");
+    }
 }

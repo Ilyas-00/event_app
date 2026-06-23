@@ -40,7 +40,7 @@ public class EventController {
         UUID serviceId = roleResolver.getServiceId(tgi);
         Event created = eventService.create(request, tgi, serviceId);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(EventResponse.from(created, 0));
+                .body(EventResponse.from(created, 0, eventService.getThemeName(created.getThemeId())));
     }
 
     @GetMapping
@@ -61,7 +61,11 @@ public class EventController {
         }
 
         List<EventResponse> response = events.stream()
-                .map(e -> EventResponse.from(e, eventService.getRegistrationCount(e.getId())))
+                .map(e -> EventResponse.from(
+                        e,
+                        eventService.getRegistrationCount(e.getId()),
+                        eventService.getThemeName(e.getThemeId())
+                ))
                 .toList();
         return ResponseEntity.ok(response);
     }
@@ -69,7 +73,11 @@ public class EventController {
     @GetMapping("/{id}")
     public ResponseEntity<EventResponse> getById(@PathVariable UUID id) {
         Event event = eventService.getById(id);
-        return ResponseEntity.ok(EventResponse.from(event, eventService.getRegistrationCount(id)));
+        return ResponseEntity.ok(EventResponse.from(
+                event,
+                eventService.getRegistrationCount(id),
+                eventService.getThemeName(event.getThemeId())
+        ));
     }
 
     @DeleteMapping("/{id}")
