@@ -85,6 +85,10 @@ public class EventService {
         return registrationRepository.countByEventId(eventId);
     }
 
+    public boolean isRegistered(UUID eventId, String tgi) {
+        return registrationRepository.existsByEventIdAndUserTgi(eventId, tgi);
+    }
+
     public String getThemeName(UUID themeId) {
         return themeRepository.findById(themeId)
                 .map(theme -> theme.getName())

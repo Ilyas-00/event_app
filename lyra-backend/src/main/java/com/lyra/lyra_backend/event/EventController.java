@@ -40,14 +40,17 @@ public class EventController {
         UUID serviceId = roleResolver.getServiceId(tgi);
         Event created = eventService.create(request, tgi, serviceId);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(EventResponse.from(created, 0, eventService.getThemeName(created.getThemeId())));
+                .body(EventResponse.from(created, 0, eventService.getThemeName(created.getThemeId()), false));
     }
 
     @GetMapping
     public ResponseEntity<List<EventResponse>> getAll(
             @RequestParam(required = false) UUID themeId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-            @RequestParam(required = false) String search) {
+            @RequestParam(required = false) String search,
+            @AuthenticationPrincipal Jwt jwt) {
+
+        String tgi = jwt.getClaimAsString("preferred_username");
 
         List<Event> events;
         if (search != null) {
@@ -64,19 +67,25 @@ public class EventController {
                 .map(e -> EventResponse.from(
                         e,
                         eventService.getRegistrationCount(e.getId()),
-                        eventService.getThemeName(e.getThemeId())
+                        eventService.getThemeName(e.getThemeId()),
+                        eventService.isRegistered(e.getId(), tgi)
                 ))
                 .toList();
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EventResponse> getById(@PathVariable UUID id) {
+    public ResponseEntity<EventResponse> getById(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal Jwt jwt) {
+
+        String tgi = jwt.getClaimAsString("preferred_username");
         Event event = eventService.getById(id);
         return ResponseEntity.ok(EventResponse.from(
                 event,
                 eventService.getRegistrationCount(id),
-                eventService.getThemeName(event.getThemeId())
+                eventService.getThemeName(event.getThemeId()),
+                eventService.isRegistered(id, tgi)
         ));
     }
 
