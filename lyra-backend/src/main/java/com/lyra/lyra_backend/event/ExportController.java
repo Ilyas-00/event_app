@@ -42,18 +42,21 @@ public class ExportController {
 
         String tgi = jwt.getClaimAsString("preferred_username");
 
-        // seul un admin de service peut exporter
-        if (roleResolver.getRole(tgi) != Role.SERVICE_ADMIN) {
+        Role role = roleResolver.getRole(tgi);
+        if (role != Role.SERVICE_ADMIN && role != Role.SUPER_ADMIN) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "Seul un admin de service peut exporter un événement");
+                    "Seul un admin peut exporter un événement");
         }
 
-        // l'event doit appartenir au même service que l'admin
         Event event = eventService.getById(id);
-        UUID adminServiceId = roleResolver.getServiceId(tgi);
-        if (!event.getServiceId().equals(adminServiceId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "Cet événement n'appartient pas à votre service");
+
+        // SERVICE_ADMIN ne peut exporter que son propre service
+        if (role == Role.SERVICE_ADMIN) {
+            UUID adminServiceId = roleResolver.getServiceId(tgi);
+            if (!event.getServiceId().equals(adminServiceId)) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "Cet événement n'appartient pas à votre service");
+            }
         }
 
         // récupérer les inscrits
