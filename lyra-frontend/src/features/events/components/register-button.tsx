@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { registerToEvent, unregisterFromEvent } from '@/features/events/services/event-actions'
 import { cn } from '@/lib/utils'
-import { useState } from 'react'
+import { useAsyncAction } from '@/hooks/useAsyncAction'
 import { toast } from 'sonner'
 
 interface Props {
@@ -15,13 +15,12 @@ interface Props {
 }
 
 export default function RegisterButton({ eventId, remainingSeats, isRegistered, size = 'default', className }: Props) {
-  const [loading, setLoading] = useState(false)
+  const { loading, run } = useAsyncAction()
   const full = remainingSeats <= 0
 
   async function handleClick(e: React.MouseEvent) {
     e.stopPropagation()
-    setLoading(true)
-    try {
+    await run(async () => {
       if (isRegistered) {
         await unregisterFromEvent(eventId)
         toast.success('Désinscription confirmée')
@@ -29,11 +28,7 @@ export default function RegisterButton({ eventId, remainingSeats, isRegistered, 
         await registerToEvent(eventId)
         toast.success('Inscription confirmée')
       }
-    } catch {
-      toast.error(isRegistered ? "Erreur lors de la désinscription" : "Erreur lors de l'inscription")
-    } finally {
-      setLoading(false)
-    }
+    }, () => isRegistered ? "Erreur lors de la désinscription" : "Erreur lors de l'inscription")
   }
 
   if (!isRegistered && full) {

@@ -2,8 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { useState } from 'react'
-import { toast } from 'sonner'
+import { useAsyncAction } from '@/hooks/useAsyncAction'
 
 interface Props {
   eventId: string
@@ -13,12 +12,11 @@ interface Props {
 }
 
 export default function ExtractButton({ eventId, eventTitle, size = 'default', className }: Props) {
-  const [loading, setLoading] = useState(false)
+  const { loading, run } = useAsyncAction()
 
   async function handleClick(e: React.MouseEvent) {
     e.stopPropagation()
-    setLoading(true)
-    try {
+    await run(async () => {
       const res = await fetch(`/api/events/${eventId}/export`)
       if (!res.ok) throw new Error(`${res.status}`)
       const blob = await res.blob()
@@ -28,11 +26,7 @@ export default function ExtractButton({ eventId, eventTitle, size = 'default', c
       a.download = `emargement-${eventTitle}.xlsx`
       a.click()
       URL.revokeObjectURL(url)
-    } catch (err) {
-      toast.error(`Erreur lors de l'extraction (${err instanceof Error ? err.message : 'inconnu'})`)
-    } finally {
-      setLoading(false)
-    }
+    }, (err) => `Erreur lors de l'extraction (${err instanceof Error ? err.message : 'inconnu'})`)
   }
 
   return (

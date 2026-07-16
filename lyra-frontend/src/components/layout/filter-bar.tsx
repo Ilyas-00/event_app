@@ -11,9 +11,8 @@ import { Checkbox } from '../ui/checkbox'
 import { Label } from '../ui/label'
 import { frCH } from 'react-day-picker/locale'
 import { Badge } from '../ui/badge'
-import { colorFromThemeId } from '@/utils/tagColors'
-import { Theme } from '@/features/themes/types'
-import { getThemes } from '@/features/themes/services/theme-service'
+import { colorFromThemeId } from '@/features/events/utils'
+import { useThemes } from '@/features/themes/hooks/useThemes'
 
 export default function FilterBar() {
 	const router = useRouter()
@@ -22,12 +21,8 @@ export default function FilterBar() {
 
 	const [search, setSearch] = useState(searchParams.get('search') ?? '')
 	const [dates, setDates] = useState<Date | undefined>()
-	const [themes, setThemes] = useState<Theme[]>([])
+	const themes = useThemes()
 	const [selectedThemeId, setSelectedThemeId] = useState(searchParams.get('theme') ?? '')
-
-	useEffect(() => {
-		getThemes().then(setThemes)
-	}, [])
 
 	useEffect(() => {
 		const t = setTimeout(() => {

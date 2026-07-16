@@ -2,15 +2,6 @@ export type CATEGORY = 'GConf' | 'SSI' | 'Cyber' | 'Data' | 'HSE' | 'Ingenierie'
 
 export const CATEGORY_LIST: CATEGORY[] = ['GConf', 'SSI', 'Cyber', 'Data', 'HSE', 'Ingenierie']
 
-export const categoryColors: Record<string, string> = {
-  GConf:      "violet",
-  SSI:        "fuchsia",
-  Cyber:      "red",
-  Data:       "emerald",
-  HSE:        "amber",
-  Ingenierie: "orange",
-};
-
 export type Event = {
   id: string;
   title: string;

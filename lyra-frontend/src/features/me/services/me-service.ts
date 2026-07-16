@@ -1,14 +1,10 @@
 "use server"
 
-import { auth } from "@/auth"
-import { Me } from "@/lib/types/me"
+import { Me } from "@/features/me/types"
+import { serverFetch } from "@/lib/api-client"
 
 export async function getMe(): Promise<Me | null> {
-  const session = await auth()
-  const res = await fetch(`${process.env.BACKEND_URL}/api/me`, {
-    headers: { Authorization: `Bearer ${session?.accessToken}` },
-    cache: "no-store",
-  })
+  const res = await serverFetch("/api/me", { cache: "no-store" })
   if (!res.ok) return null
   return res.json()
 }

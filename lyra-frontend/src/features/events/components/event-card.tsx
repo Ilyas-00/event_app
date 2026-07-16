@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { Event } from '@/features/events/types';
-import { colorFromThemeId } from '@/utils/tagColors';
+import { colorFromThemeId, formatEventSchedule } from '@/features/events/utils';
 import { UsersRoundIcon } from 'lucide-react';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import RegisterButton from './register-button'
@@ -35,16 +35,7 @@ export default function EventCard({ event, eventSelectedId, setEventSelected, is
 	const { title, summary, eventDate, durationMinutes, capacity, remainingSeats, themeName } = event;
 	const color = colorFromThemeId(themeName);
 
-	const startTime = new Date(eventDate).getTime();
-	const dateFormatted = new Date(startTime).toLocaleDateString('fr-FR', {
-		weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-	});
-	const startTimeFormatted = new Date(startTime)
-		.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
-		.replace(':', 'h');
-	const endTimeFormatted = new Date(startTime + durationMinutes * 60 * 1000)
-		.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
-		.replace(':', 'h');
+	const { dateFormatted, startTimeFormatted, endTimeFormatted } = formatEventSchedule(eventDate, durationMinutes, { withWeekday: true });
 
 	const registered = capacity - remainingSeats;
 

@@ -1,5 +1,5 @@
 import { getEvents } from "@/features/events/services/event-service"
-import { isAdmin } from "@/lib/services/me-service"
+import { isAdmin } from "@/features/me/services/me-service"
 import EventsClient from "@/features/events/components/events-client"
 
 export default async function AppPage({

@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Roboto } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/layout/header";
-import FilterBar from "@/components/layout/filter-bar";
 import { Toaster } from "@/components/ui/sonner";
 import Providers from "@/components/providers";
 

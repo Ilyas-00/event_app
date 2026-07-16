@@ -3,7 +3,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Event } from '@/features/events/types';
-import { colorFromThemeId } from '@/utils/tagColors';
+import { colorFromThemeId, formatEventSchedule } from '@/features/events/utils';
 import { CalendarIcon, ClockIcon, MapPinIcon, UserRoundCogIcon, UsersRoundIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import RegisterButton from './register-button';
@@ -21,16 +21,7 @@ export default function EventDetails({ event, isAdmin }: props) {
     const color = colorFromThemeId(themeName);
     const registered = capacity - remainingSeats;
 
-    const startTime = new Date(eventDate).getTime();
-    const dateFormatted = new Date(startTime).toLocaleDateString('fr-FR', {
-        day: 'numeric', month: 'long', year: 'numeric',
-    });
-    const startTimeFormatted = new Date(startTime)
-        .toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
-        .replace(':', 'h');
-    const endTimeFormatted = new Date(startTime + durationMinutes * 60 * 1000)
-        .toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
-        .replace(':', 'h');
+    const { dateFormatted, startTimeFormatted, endTimeFormatted } = formatEventSchedule(eventDate, durationMinutes);
 
     return (
         <div className="w-full h-full flex flex-col p-2 py-8 bg-white">

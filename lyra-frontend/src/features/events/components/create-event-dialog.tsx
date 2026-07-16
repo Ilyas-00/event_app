@@ -8,11 +8,10 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { CircleAlertIcon } from 'lucide-react'
-import { useTransition, useState, useEffect } from 'react'
+import { useTransition, useState } from 'react'
 import { toast } from 'sonner'
 import { createEvent } from '../services/event-actions'
-import { Theme } from '@/features/themes/types'
-import { getThemes } from '@/features/themes/services/theme-service'
+import { useThemes } from '@/features/themes/hooks/useThemes'
 
 const emptyForm = {
     title: '',
@@ -39,11 +38,7 @@ export default function CreateEventDialog() {
     const [alertOpen, setAlertOpen] = useState(false)
     const [form, setForm] = useState(emptyForm)
     const [isPending, startTransition] = useTransition()
-    const [themes, setThemes] = useState<Theme[]>([])
-
-    useEffect(() => {
-        getThemes().then(setThemes)
-    }, [])
+    const themes = useThemes()
 
     function set(field: keyof typeof emptyForm) {
         return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
