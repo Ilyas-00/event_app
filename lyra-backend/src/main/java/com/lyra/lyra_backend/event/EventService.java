@@ -2,6 +2,8 @@ package com.lyra.lyra_backend.event;
 
 import com.lyra.lyra_backend.theme.ThemeRepository;
 import com.lyra.lyra_backend.registration.RegistrationRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -68,6 +70,22 @@ public class EventService {
 
     public List<Event> search(String query) {
         return eventRepository.findByTitleContainingIgnoreCase(query);
+    }
+
+    public List<Event> getByService(UUID serviceId) {
+        return eventRepository.findByServiceId(serviceId);
+    }
+
+    public Page<Event> getUpcomingByService(UUID serviceId, Pageable pageable) {
+        return eventRepository.findUpcomingByService(serviceId, pageable);
+    }
+
+    public Page<Event> getTerminatedByService(UUID serviceId, Pageable pageable) {
+        return eventRepository.findTerminatedByService(serviceId, pageable);
+    }
+
+    public Page<Event> getAllPaged(Pageable pageable) {
+        return eventRepository.findAll(pageable);
     }
 
     public void delete(UUID eventId, UUID serviceId) {

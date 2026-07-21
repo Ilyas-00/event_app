@@ -6,5 +6,6 @@ import java.util.UUID;
 public record MeResponse(
         String tgi,
         Role role,
-        UUID serviceId
+        UUID serviceId,
+        String serviceName
 ) {}

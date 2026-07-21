@@ -3,6 +3,11 @@ package com.lyra.lyra_backend.event;
 import com.lyra.lyra_backend.role.Role;
 import com.lyra.lyra_backend.role.RoleResolver;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,34 +49,69 @@ public class EventController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EventResponse>> getAll(
+    public ResponseEntity<Page<EventResponse>> getAll(
             @RequestParam(required = false) UUID themeId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
             @AuthenticationPrincipal Jwt jwt) {
 
         String tgi = jwt.getClaimAsString("preferred_username");
+        Pageable pageable = PageRequest.of(page, size, Sort.by("eventDate").ascending());
 
-        List<Event> events;
+        Page<Event> events;
         if (search != null) {
-            events = eventService.search(search);
+            events = toPage(eventService.search(search), pageable);
         } else if (themeId != null) {
-            events = eventService.getByTheme(themeId);
+            events = toPage(eventService.getByTheme(themeId), pageable);
         } else if (date != null) {
-            events = eventService.getByDate(date.atStartOfDay());
+            events = toPage(eventService.getByDate(date.atStartOfDay()), pageable);
         } else {
-            events = eventService.getAll();
+            events = eventService.getAllPaged(pageable);
         }
 
-        List<EventResponse> response = events.stream()
-                .map(e -> EventResponse.from(
-                        e,
-                        eventService.getRegistrationCount(e.getId()),
-                        eventService.getThemeName(e.getThemeId()),
-                        eventService.isRegistered(e.getId(), tgi)
-                ))
-                .toList();
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(events.map(e -> EventResponse.from(
+                e,
+                eventService.getRegistrationCount(e.getId()),
+                eventService.getThemeName(e.getThemeId()),
+                eventService.isRegistered(e.getId(), tgi)
+        )));
+    }
+
+    // Statut "à venir/en cours" ou "terminé" filtré et paginé directement en base (pas de calcul en mémoire sur toute la table)
+    @GetMapping("/my-service")
+    public ResponseEntity<Page<EventResponse>> getMyServiceEvents(
+            @RequestParam(defaultValue = "upcoming") String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @AuthenticationPrincipal Jwt jwt) {
+
+        String tgi = jwt.getClaimAsString("preferred_username");
+        if (roleResolver.getRole(tgi) != Role.SERVICE_ADMIN) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Seul un admin de service peut consulter les événements de son service");
+        }
+
+        UUID serviceId = roleResolver.getServiceId(tgi);
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Event> events = "terminated".equalsIgnoreCase(status)
+                ? eventService.getTerminatedByService(serviceId, pageable)
+                : eventService.getUpcomingByService(serviceId, pageable);
+
+        return ResponseEntity.ok(events.map(e -> EventResponse.from(
+                e,
+                eventService.getRegistrationCount(e.getId()),
+                eventService.getThemeName(e.getThemeId()),
+                eventService.isRegistered(e.getId(), tgi)
+        )));
+    }
+
+    private Page<Event> toPage(List<Event> list, Pageable pageable) {
+        int start = Math.min((int) pageable.getOffset(), list.size());
+        int end = Math.min(start + pageable.getPageSize(), list.size());
+        return new PageImpl<>(list.subList(start, end), pageable, list.size());
     }
 
     @GetMapping("/{id}")
