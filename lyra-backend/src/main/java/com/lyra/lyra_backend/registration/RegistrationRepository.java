@@ -10,4 +10,5 @@ public interface RegistrationRepository extends JpaRepository<Registration, UUID
     Optional<Registration> findByEventIdAndUserTgi(UUID eventId, String userTgi);
     List<Registration> findByEventId(UUID eventId);
     int countByEventId(UUID eventId);
+    List<Registration> findByUserTgiOrderByRegisteredAtDesc(String userTgi);
 }

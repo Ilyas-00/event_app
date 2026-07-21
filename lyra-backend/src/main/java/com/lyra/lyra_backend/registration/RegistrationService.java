@@ -60,5 +60,9 @@ public class RegistrationService {
     public int countByEvent(UUID eventId) {
         return registrationRepository.countByEventId(eventId);
     }
+
+    public List<Registration> getByUser(String tgi) {
+        return registrationRepository.findByUserTgiOrderByRegisteredAtDesc(tgi);
+    }
 }
 
